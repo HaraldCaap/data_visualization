@@ -53,6 +53,28 @@ st.sidebar.header('Filter Options')
 # Slider for selecting number of clusters
 num_clusters = st.sidebar.slider('Number of Clusters', min_value=2, max_value=10, value=5)
 
+# Function to compute the elbow plot
+def compute_elbow_plot(features, max_clusters):
+    sse = []
+    for k in range(1, max_clusters + 1):
+        kmeans = KMeans(n_clusters=k, random_state=42)
+        kmeans.fit(features)
+        sse.append(kmeans.inertia_)
+    return sse
+
+# Display the elbow plot
+st.sidebar.header('Elbow Plot')
+max_clusters = st.sidebar.slider('Max Clusters for Elbow Plot', min_value=2, max_value=20, value=10)
+
+sse = compute_elbow_plot(features, max_clusters)
+
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, max_clusters + 1), sse, marker='o')
+plt.title('Elbow Plot for Optimal Number of Clusters')
+plt.xlabel('Number of Clusters')
+plt.ylabel('Sum of Squared Distances')
+st.pyplot(plt.gcf())
+
 # Cluster the data
 kmeans = KMeans(n_clusters=num_clusters, random_state=42)
 clusters = kmeans.fit_predict(features)
